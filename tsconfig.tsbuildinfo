@@ -1,1 +1,0 @@
-{"root":["./src/App.tsx","./src/main.tsx","./src/types.ts","./src/components/AppShell.tsx","./src/data/constituentEvents.ts","./src/lib/constituentAlerts.test.ts","./src/lib/constituentAlerts.ts","./src/test/setup.ts"],"errors":true,"version":"5.9.3"}

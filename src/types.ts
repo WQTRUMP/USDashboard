@@ -55,6 +55,7 @@ export interface AnnouncementInput {
   announcementDate: string;
   effectiveDate: string;
   sourceUrl: string;
+  validationSourceUrl?: string;
   note?: string;
   items: ChangeItem[];
 }

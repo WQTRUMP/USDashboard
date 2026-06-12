@@ -275,7 +275,14 @@ export default function App({
                   </option>
                 ))}
               </select>
-              <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as 'all' | EventStatus)}>
+              <select
+                value={statusFilter}
+                onChange={(event) =>
+                  setStatusFilter(
+                    event.target.value as (typeof stateFilters)[number]['key']
+                  )
+                }
+              >
                 {stateFilters.map((option) => (
                   <option key={option.key} value={option.key}>
                     {option.label}

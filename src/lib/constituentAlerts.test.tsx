@@ -58,7 +58,8 @@ describe('constituent alert logic', () => {
       ...original,
       confirmedAt: '2026-06-02T20:00:00Z',
       status: 'effective_confirmed',
-      validationSourceUrl: 'https://www.ssga.com/us/en/intermediary/etfs/state-street-spdr-sp-500-etf-trust-spy'
+      validationSourceUrl:
+        'https://www.ssga.com/us/en/intermediary/etfs/state-street-spdr-sp-500-etf-trust-spy'
     };
 
     const merged = upsertConfirmedEvent([original], confirmed);
@@ -76,7 +77,8 @@ describe('constituent alert logic', () => {
         indexName: 'Nasdaq-100',
         announcementDate: '2025-12-12T13:00:00Z',
         effectiveDate: '2025-12-22T13:30:00Z',
-        sourceUrl: 'https://ir.nasdaq.com/news-releases/news-release-details/annual-changes-nasdaq-100-indexr-2',
+        sourceUrl:
+          'https://ir.nasdaq.com/news-releases/news-release-details/annual-changes-nasdaq-100-indexr-2',
         items: [
           { ticker: 'A', companyName: 'A', action: 'add' },
           { ticker: 'B', companyName: 'B', action: 'add' },
@@ -152,7 +154,9 @@ describe('constituent alert logic', () => {
         announcementDate: '2026-06-10T12:00:00Z',
         effectiveDate: '2026-06-12T13:30:00Z',
         sourceUrl: 'https://press.spglobal.com/example',
-        items: [{ ticker: 'FDXF', companyName: 'FedEx Freight Holding Company', action: 'add' }]
+        items: [
+          { ticker: 'FDXF', companyName: 'FedEx Freight Holding Company', action: 'add' }
+        ]
       },
       DASHBOARD_NOW
     );
