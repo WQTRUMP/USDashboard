@@ -1,7 +1,14 @@
 import { useMemo, useState } from 'react';
 import { AppShell } from './components/AppShell';
 import { DASHBOARD_NOW, seededEvents } from './data/constituentEvents';
-import { countItems, deriveEventStatus, selectFeaturedEvent, sortEvents, summarizeEvent } from './lib/constituentAlerts';
+import {
+  countItems,
+  deriveEventStatus,
+  isEventWithinHistoryWindow,
+  selectFeaturedEvent,
+  sortEvents,
+  summarizeEvent
+} from './lib/constituentAlerts';
 import type { ConstituentEvent, EventStatus } from './types';
 
 const statusLabel: Record<EventStatus, string> = {
@@ -166,37 +173,40 @@ export default function App({
   const [statusFilter, setStatusFilter] = useState<(typeof stateFilters)[number]['key']>('all');
   const [bannerOpen, setBannerOpen] = useState(true);
 
+  const recentEvents = useMemo(
+    () =>
+      sortEvents(
+        events.filter((event) => isEventWithinHistoryWindow(event, DASHBOARD_NOW)),
+        DASHBOARD_NOW
+      ),
+    [events]
+  );
+
   const filteredEvents = useMemo(() => {
-    return sortEvents(events, DASHBOARD_NOW).filter((event) => {
+    return recentEvents.filter((event) => {
       const derivedStatus = deriveEventStatus(event, DASHBOARD_NOW);
       const indexMatch = indexFilter === 'all' || event.indexCode === indexFilter;
       const statusMatch = statusFilter === 'all' || derivedStatus === statusFilter;
       return indexMatch && statusMatch;
     });
-  }, [events, indexFilter, statusFilter]);
+  }, [recentEvents, indexFilter, statusFilter]);
 
   const byIndex = useMemo(
     () => ({
-      NDX: sortEvents(
-        events.filter((event) => event.indexCode === 'NDX'),
-        DASHBOARD_NOW
-      )[0],
-      SPX: sortEvents(
-        events.filter((event) => event.indexCode === 'SPX'),
-        DASHBOARD_NOW
-      )[0]
+      NDX: recentEvents.find((event) => event.indexCode === 'NDX'),
+      SPX: recentEvents.find((event) => event.indexCode === 'SPX')
     }),
-    [events]
+    [recentEvents]
   );
 
   const fallbackSelection =
-    filteredEvents[0] ?? byIndex.SPX ?? byIndex.NDX ?? events[0];
+    filteredEvents[0] ?? byIndex.SPX ?? byIndex.NDX ?? recentEvents[0];
   const [selectedId, setSelectedId] = useState<string | undefined>(fallbackSelection?.id);
 
-  const featuredEvent = selectFeaturedEvent(events, DASHBOARD_NOW);
+  const featuredEvent = selectFeaturedEvent(recentEvents, DASHBOARD_NOW);
   const selectedEvent =
     filteredEvents.find((event) => event.id === selectedId) ??
-    events.find((event) => event.id === selectedId) ??
+    recentEvents.find((event) => event.id === selectedId) ??
     fallbackSelection;
 
   return (

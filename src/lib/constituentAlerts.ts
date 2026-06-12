@@ -13,7 +13,35 @@ const PRIORITY: Record<EventStatus, number> = {
   stale: 4
 };
 
+export const HISTORY_WINDOW_MONTHS = 24;
+
 const isoDay = (value?: string) => (value ? value.slice(0, 10) : '');
+
+const addUtcMonths = (iso: string, months: number) => {
+  const date = new Date(iso);
+  return new Date(
+    Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth() + months,
+      date.getUTCDate(),
+      date.getUTCHours(),
+      date.getUTCMinutes(),
+      date.getUTCSeconds(),
+      date.getUTCMilliseconds()
+    )
+  );
+};
+
+export const getHistoryWindowStartDay = (nowIso: string) =>
+  isoDay(addUtcMonths(nowIso, -HISTORY_WINDOW_MONTHS).toISOString());
+
+const getEventAnchorDay = (event: ConstituentEvent) =>
+  isoDay(event.effectiveDate ?? event.discoveredAt);
+
+export const isEventWithinHistoryWindow = (
+  event: ConstituentEvent,
+  nowIso: string
+) => getEventAnchorDay(event) >= getHistoryWindowStartDay(nowIso);
 
 export const makeDedupeKey = (event: ConstituentEvent) => {
   const added = event.items
@@ -55,7 +83,7 @@ export const deriveEventStatus = (
     return 'scheduled';
   }
 
-  if (effectiveDay && effectiveDay < today) {
+  if (!isEventWithinHistoryWindow(event, nowIso)) {
     return 'stale';
   }
 
