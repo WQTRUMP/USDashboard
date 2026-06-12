@@ -269,4 +269,42 @@ describe('constituent alert logic', () => {
     expect(screen.queryByText('2024-06-11')).not.toBeInTheDocument();
     expect(screen.queryByText('最近 24 个月未检测到已记录的指数成分股调整事件')).not.toBeInTheDocument();
   });
+
+  it('renders only the empty state for stale-only inputs outside the 24 month window', () => {
+    const staleEvent: ConstituentEvent = {
+      ...createEventFromAnnouncement(
+        {
+          id: 'ndx-stale-only',
+          indexCode: 'NDX',
+          indexName: 'Nasdaq-100',
+          announcementDate: '2024-05-01T12:00:00Z',
+          effectiveDate: '2024-05-10T13:30:00Z',
+          sourceUrl: 'https://ir.nasdaq.com/news-releases/news-release-details/example',
+          items: [
+            {
+              ticker: 'OLD',
+              companyName: 'Old Holdings, Inc.',
+              action: 'add',
+              reason: 'Legacy rebalance'
+            }
+          ]
+        },
+        DASHBOARD_NOW
+      ),
+      confirmedAt: '2024-05-11T21:00:00Z',
+      note: 'Should stay hidden outside the default window',
+      status: 'effective_confirmed'
+    };
+
+    expect(deriveEventStatus(staleEvent, DASHBOARD_NOW)).toBe('stale');
+    expect(isEventWithinHistoryWindow(staleEvent, DASHBOARD_NOW)).toBe(false);
+
+    render(<App events={[staleEvent]} />);
+
+    expect(screen.getByTestId('empty-state')).toBeInTheDocument();
+    expect(screen.queryByText('2024-05-10')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Nasdaq-100 成分股变动详情' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '官方来源' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Nasdaq-100 成分股调整已确认落地')).not.toBeInTheDocument();
+  });
 });

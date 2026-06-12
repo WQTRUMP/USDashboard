@@ -173,41 +173,40 @@ export default function App({
   const [statusFilter, setStatusFilter] = useState<(typeof stateFilters)[number]['key']>('all');
   const [bannerOpen, setBannerOpen] = useState(true);
 
-  const filteredEvents = useMemo(() => {
-    return sortEvents(events, DASHBOARD_NOW).filter((event) => {
-      const derivedStatus = deriveEventStatus(event, DASHBOARD_NOW);
-      const indexMatch = indexFilter === 'all' || event.indexCode === indexFilter;
-      const statusMatch = statusFilter === 'all' || derivedStatus === statusFilter;
-      return (
-        isEventWithinHistoryWindow(event, DASHBOARD_NOW) &&
-        indexMatch &&
-        statusMatch
-      );
-    });
-  }, [events, indexFilter, statusFilter]);
-
-  const byIndex = useMemo(
-    () => ({
-      NDX: sortEvents(
-        events.filter((event) => event.indexCode === 'NDX'),
+  const recentEvents = useMemo(
+    () =>
+      sortEvents(
+        events.filter((event) => isEventWithinHistoryWindow(event, DASHBOARD_NOW)),
         DASHBOARD_NOW
-      )[0],
-      SPX: sortEvents(
-        events.filter((event) => event.indexCode === 'SPX'),
-        DASHBOARD_NOW
-      )[0]
-    }),
+      ),
     [events]
   );
 
+  const filteredEvents = useMemo(() => {
+    return recentEvents.filter((event) => {
+      const derivedStatus = deriveEventStatus(event, DASHBOARD_NOW);
+      const indexMatch = indexFilter === 'all' || event.indexCode === indexFilter;
+      const statusMatch = statusFilter === 'all' || derivedStatus === statusFilter;
+      return indexMatch && statusMatch;
+    });
+  }, [recentEvents, indexFilter, statusFilter]);
+
+  const byIndex = useMemo(
+    () => ({
+      NDX: recentEvents.find((event) => event.indexCode === 'NDX'),
+      SPX: recentEvents.find((event) => event.indexCode === 'SPX')
+    }),
+    [recentEvents]
+  );
+
   const fallbackSelection =
-    filteredEvents[0] ?? byIndex.SPX ?? byIndex.NDX ?? events[0];
+    filteredEvents[0] ?? byIndex.SPX ?? byIndex.NDX ?? recentEvents[0];
   const [selectedId, setSelectedId] = useState<string | undefined>(fallbackSelection?.id);
 
-  const featuredEvent = selectFeaturedEvent(events, DASHBOARD_NOW);
+  const featuredEvent = selectFeaturedEvent(recentEvents, DASHBOARD_NOW);
   const selectedEvent =
     filteredEvents.find((event) => event.id === selectedId) ??
-    events.find((event) => event.id === selectedId) ??
+    recentEvents.find((event) => event.id === selectedId) ??
     fallbackSelection;
 
   return (
