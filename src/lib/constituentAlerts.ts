@@ -47,10 +47,6 @@ export const deriveEventStatus = (
   const effectiveDay = isoDay(event.effectiveDate);
   const discoveredDay = isoDay(event.discoveredAt);
 
-  if (event.confirmedAt) {
-    return 'effective_confirmed';
-  }
-
   if (effectiveDay && effectiveDay === today) {
     return 'effective_today';
   }
@@ -61,6 +57,10 @@ export const deriveEventStatus = (
 
   if (effectiveDay && effectiveDay < today) {
     return 'stale';
+  }
+
+  if (event.confirmedAt) {
+    return 'effective_confirmed';
   }
 
   if (discoveredDay === today) {
