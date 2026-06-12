@@ -163,4 +163,31 @@ describe('constituent alert logic', () => {
 
     expect(deriveEventStatus(event, DASHBOARD_NOW)).toBe('effective_today');
   });
+
+  it('marks confirmed events with past effective dates as stale', () => {
+    const event: ConstituentEvent = {
+      ...createEventFromAnnouncement(
+        {
+          id: 'spx-stale-confirmed',
+          indexCode: 'SPX',
+          indexName: 'S&P 500',
+          announcementDate: '2025-09-01T12:00:00Z',
+          effectiveDate: '2025-09-05T13:30:00Z',
+          sourceUrl: 'https://www.spglobal.com/spdji/en/',
+          items: [
+            {
+              ticker: 'XYZ',
+              companyName: 'Example Holdings, Inc.',
+              action: 'add'
+            }
+          ]
+        },
+        DASHBOARD_NOW
+      ),
+      confirmedAt: '2025-09-08T21:00:00Z',
+      status: 'effective_confirmed'
+    };
+
+    expect(deriveEventStatus(event, DASHBOARD_NOW)).toBe('stale');
+  });
 });
