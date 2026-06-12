@@ -1,7 +1,14 @@
 import { useMemo, useState } from 'react';
 import { AppShell } from './components/AppShell';
 import { DASHBOARD_NOW, seededEvents } from './data/constituentEvents';
-import { countItems, deriveEventStatus, selectFeaturedEvent, sortEvents, summarizeEvent } from './lib/constituentAlerts';
+import {
+  countItems,
+  deriveEventStatus,
+  isEventWithinHistoryWindow,
+  selectFeaturedEvent,
+  sortEvents,
+  summarizeEvent
+} from './lib/constituentAlerts';
 import type { ConstituentEvent, EventStatus } from './types';
 
 const statusLabel: Record<EventStatus, string> = {
@@ -171,7 +178,11 @@ export default function App({
       const derivedStatus = deriveEventStatus(event, DASHBOARD_NOW);
       const indexMatch = indexFilter === 'all' || event.indexCode === indexFilter;
       const statusMatch = statusFilter === 'all' || derivedStatus === statusFilter;
-      return indexMatch && statusMatch;
+      return (
+        isEventWithinHistoryWindow(event, DASHBOARD_NOW) &&
+        indexMatch &&
+        statusMatch
+      );
     });
   }, [events, indexFilter, statusFilter]);
 

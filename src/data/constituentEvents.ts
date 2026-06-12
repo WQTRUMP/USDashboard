@@ -121,8 +121,8 @@ const staleNasdaq = {
       id: 'ndx-2025-12-rebalance',
       indexCode: 'NDX',
       indexName: 'Nasdaq-100',
-      announcementDate: '2025-12-12T13:00:00Z',
-      effectiveDate: '2025-12-22T13:30:00Z',
+      announcementDate: '2024-05-12T13:00:00Z',
+      effectiveDate: '2024-05-22T13:30:00Z',
       sourceUrl:
         'https://ir.nasdaq.com/news-releases/news-release-details/annual-changes-nasdaq-100-indexr-2',
       items: [
@@ -136,7 +136,7 @@ const staleNasdaq = {
     },
     DASHBOARD_NOW
   ),
-  confirmedAt: '2025-12-23T21:00:00Z',
+  confirmedAt: '2024-05-23T21:00:00Z',
   status: 'effective_confirmed' as const
 };
 
@@ -146,8 +146,8 @@ const staleSpx = {
       id: 'spx-2025-09-05',
       indexCode: 'SPX',
       indexName: 'S&P 500',
-      announcementDate: '2025-09-01T12:00:00Z',
-      effectiveDate: '2025-09-05T13:30:00Z',
+      announcementDate: '2024-05-01T12:00:00Z',
+      effectiveDate: '2024-05-05T13:30:00Z',
       sourceUrl: 'https://www.spglobal.com/spdji/en/',
       items: [
         {
@@ -161,7 +161,7 @@ const staleSpx = {
     },
     DASHBOARD_NOW
   ),
-  confirmedAt: '2025-09-08T21:00:00Z',
+  confirmedAt: '2024-05-08T21:00:00Z',
   status: 'stale' as const
 };
 
